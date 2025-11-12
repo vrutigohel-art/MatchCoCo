@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +14,7 @@ public class GameManager : MonoBehaviour
     public Sprite[] cardFaces;   // Array of all available face sprites (e.g., 8 unique sprites)
     public int gridRows = 4;
     public int gridCols = 4;
+    public TextMeshProUGUI scoretext;
 
     [Header("Game Settings")]
     public float flipBackDelay = 1.0f; // Time to wait before flipping mismatched cards back
@@ -19,16 +23,47 @@ public class GameManager : MonoBehaviour
     private List<int> gameCardIds = new List<int>();
     private List<Card> revealedCards = new List<Card>();
     private int matchesFound = 0;
-    private int totalPairs;
-
+    public int totalPairs;
+    public GameObject StartPanel;
+    GridLayoutGroup G;
     public bool CanReveal => revealedCards.Count < 2; // Public accessor for the Card script
 
     void Start()
     {
+        G = gridParent.GetComponent<GridLayoutGroup>();
+        //totalPairs = (gridRows * gridCols) / 2;
+    }
+    // A public function that accepts an integer argument
+    public void PerformAction(int actionID)
+    {
+        Debug.Log("Button clicked! Action ID: " + actionID);
+
+        // Use the argument to determine what action to take
+        switch (actionID)
+        {
+            case 1:
+                Debug.Log("Executing Action 1: Open Inventory");
+                gridRows = gridCols =  2;
+                break;
+            case 2:
+                Debug.Log("Executing Action 2: Open Map");
+                gridRows = 3;
+                gridCols = 4;
+                break;
+            case 3:
+                Debug.Log("Executing Action 3: Open Settings");
+                gridRows = 4;
+                gridCols = 5;
+                break;
+            default:
+                Debug.LogWarning("Unknown Action ID!");
+                break;
+        }
+        G.constraintCount = gridRows;
         totalPairs = (gridRows * gridCols) / 2;
+        StartPanel.SetActive(false);
         SetupGame();
     }
-
     void SetupGame()
     {
         // 1. Prepare the Card IDs (The Matching Logic)
@@ -83,6 +118,8 @@ public class GameManager : MonoBehaviour
         {
             // --- Match Found! ---
             matchesFound++;
+            PlayerPrefs.SetInt("GameScore", matchesFound);
+            scoretext.text = matchesFound.ToString();
             card1.Matched();
             card2.Matched();
             Debug.Log("Match Found!");
@@ -120,6 +157,11 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         // Reload the current scene to restart
+        int t = PlayerPrefs.GetInt("GameScore", 0);
+        Debug.Log("Current score ::" + t);
+        PlayerPrefs.SetInt("GameScore", 0);
+        scoretext.text = "0";
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
     }
 }

@@ -64,6 +64,6 @@ public class Card : MonoBehaviour
         // Disable the button to prevent interaction
         button.interactable = false;
         // Optionally, destroy the card or make it invisible
-        Destroy(gameObject, 0.5f);
+        //Destroy(gameObject, 0.5f);
     }
 }
