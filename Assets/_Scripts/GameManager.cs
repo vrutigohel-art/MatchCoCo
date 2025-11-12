@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     private List<Card> revealedCards = new List<Card>();
     private int matchesFound = 0;
     private ScoreManager scoreManager;
+    private AudioManager audioManager;
     public int totalPairs;
     public GameObject StartPanel;
     public GameObject WonPanel; 
@@ -34,6 +35,7 @@ public class GameManager : MonoBehaviour
     {
         G = gridParent.GetComponent<GridLayoutGroup>();
         scoreManager = GetComponent<ScoreManager>();
+        audioManager = GetComponent<AudioManager>();
     }
     // A public function that accepts an integer argument
     public void PerformAction(int actionID)
@@ -44,21 +46,21 @@ public class GameManager : MonoBehaviour
         switch (actionID)
         {
             case 1:
-                Debug.Log("Executing Action 1: Open Inventory");
+                Debug.Log("Setting Grid 2*2");
                 gridRows = gridCols =  2;
                 break;
             case 2:
-                Debug.Log("Executing Action 2: Open Map");
+                Debug.Log("Setting Grid 3*4");
                 gridRows = 3;
                 gridCols = 4;
                 break;
             case 3:
-                Debug.Log("Executing Action 3: Open Settings");
+                Debug.Log("Setting Grid 4*5");
                 gridRows = 4;
                 gridCols = 5;
                 break;
             default:
-                Debug.LogWarning("Unknown Action ID!");
+                Debug.LogWarning("Default Setting Grid 2*2");
                 break;
         }
         G.constraintCount = gridRows;
@@ -98,6 +100,7 @@ public class GameManager : MonoBehaviour
         if (!CanReveal || revealedCards.Contains(card)) return;
 
         card.FlipToFace();
+        audioManager.PlayCardFlip();
         revealedCards.Add(card);
 
         // Check for a match if two cards are revealed
@@ -124,13 +127,14 @@ public class GameManager : MonoBehaviour
             card1.Matched();
             card2.Matched();
             Debug.Log("Match Found!");
-
+            audioManager.PlayMatch();
             scoreManager.UpdateScore(matchesFound);
 
             if (matchesFound >= totalPairs)
             {
                 Debug.Log("Game Over! You Win!");
                 WonPanel.SetActive(true);
+                audioManager.PlayGameOver();
                 // Optionally show a Game Over screen
             }
         }
@@ -139,6 +143,7 @@ public class GameManager : MonoBehaviour
             // --- No Match ---
             StartCoroutine(card1.FlipToBack(0f)); // Flip back immediately
             StartCoroutine(card2.FlipToBack(0f));
+            audioManager.PlayMismatch();
             Debug.Log("No Match. Try again.");
         }
 
