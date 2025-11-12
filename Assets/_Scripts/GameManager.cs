@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public Sprite[] cardFaces;   // Array of all available face sprites (e.g., 8 unique sprites)
     public int gridRows = 4;
     public int gridCols = 4;
-    public TextMeshProUGUI scoretext;
+    
 
     [Header("Game Settings")]
     public float flipBackDelay = 1.0f; // Time to wait before flipping mismatched cards back
@@ -23,15 +23,17 @@ public class GameManager : MonoBehaviour
     private List<int> gameCardIds = new List<int>();
     private List<Card> revealedCards = new List<Card>();
     private int matchesFound = 0;
+    private ScoreManager scoreManager;
     public int totalPairs;
     public GameObject StartPanel;
+    public GameObject WonPanel; 
     GridLayoutGroup G;
     public bool CanReveal => revealedCards.Count < 2; // Public accessor for the Card script
 
     void Start()
     {
         G = gridParent.GetComponent<GridLayoutGroup>();
-        //totalPairs = (gridRows * gridCols) / 2;
+        scoreManager = GetComponent<ScoreManager>();
     }
     // A public function that accepts an integer argument
     public void PerformAction(int actionID)
@@ -118,15 +120,17 @@ public class GameManager : MonoBehaviour
         {
             // --- Match Found! ---
             matchesFound++;
-            PlayerPrefs.SetInt("GameScore", matchesFound);
-            scoretext.text = matchesFound.ToString();
+            
             card1.Matched();
             card2.Matched();
             Debug.Log("Match Found!");
 
+            scoreManager.UpdateScore(matchesFound);
+
             if (matchesFound >= totalPairs)
             {
                 Debug.Log("Game Over! You Win!");
+                WonPanel.SetActive(true);
                 // Optionally show a Game Over screen
             }
         }
@@ -157,10 +161,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         // Reload the current scene to restart
-        int t = PlayerPrefs.GetInt("GameScore", 0);
-        Debug.Log("Current score ::" + t);
         PlayerPrefs.SetInt("GameScore", 0);
-        scoretext.text = "0";
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
     }
