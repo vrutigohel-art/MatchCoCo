@@ -4,13 +4,14 @@ using System.Collections;
 
 public class Card : MonoBehaviour
 {
-    // --- Public References ---
-    public int cardId; // The unique cardID matching value (e.g., 0, 1, 2)
-    public Sprite cardFace; // The image when the card is flipped
-    public Sprite cardBack; // The image when the card is covered
+    // --- Public Properties ---
+    public int cardId; // The unique ID representing the card's matching value (e.g., 0, 1, 2)
+    public Sprite cardFace; // The image shown when the card is flipped
+    public Sprite cardBack; // The image shown when the card is covered
 
     // --- Private References ---
     private Image cardImage;
+    private GameManager gameManager;
     private Button button;
 
     void Awake()
@@ -23,11 +24,12 @@ public class Card : MonoBehaviour
         cardImage.sprite = cardBack;
     }
 
-    // Called to initialize the card
-    public void Initialize(int id, Sprite faceSprite)
+    // Called by the GameManager to initialize the card
+    public void Initialize(int id, Sprite faceSprite, GameManager manager)
     {
         cardId = id;
         cardFace = faceSprite;
+        gameManager = manager;
 
         // Set the click handler
         button.onClick.AddListener(OnCardClicked);
@@ -36,20 +38,20 @@ public class Card : MonoBehaviour
     // Called when the user clicks the card
     public void OnCardClicked()
     {
-        // Only allow clicking if the card is face down 
-        if (cardImage.sprite == cardBack )
+        // Only allow clicking if the card is face down and the game manager allows a new reveal
+        if (cardImage.sprite == cardBack && gameManager.CanReveal)
         {
-            Debug.Log("Do something to reveal card");
+            gameManager.CardRevealed(this);
         }
     }
 
-    
+    // Flips the card face up (called by GameManager)
     public void FlipToFace()
     {
         cardImage.sprite = cardFace;
     }
 
-    // Flips the card face down
+    // Flips the card face down after a delay (called by GameManager)
     public IEnumerator FlipToBack(float delay)
     {
         yield return new WaitForSeconds(delay);
