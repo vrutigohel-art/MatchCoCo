@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     private int matchesFound = 0;
     private ScoreManager scoreManager;
     private AudioManager audioManager;
+    private GridLayOutCellSizer cellSizer;
     public int totalPairs;
     public GameObject StartPanel;
     public GameObject WonPanel; 
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
         G = gridParent.GetComponent<GridLayoutGroup>();
         scoreManager = GetComponent<ScoreManager>();
         audioManager = GetComponent<AudioManager>();
+        cellSizer = GetComponent<GridLayOutCellSizer>();
     }
     // A public function that accepts an integer argument
     public void PerformAction(int actionID)
@@ -92,6 +94,7 @@ public class GameManager : MonoBehaviour
 
             newCard.Initialize(id, face, this);
         }
+        cellSizer.CellResizer(gridRows,gridCols);
     }
 
     // Called by a Card when it is clicked and flipped face up

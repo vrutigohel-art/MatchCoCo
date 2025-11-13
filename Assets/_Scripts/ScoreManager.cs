@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
-    int GameScore = 0;
+    
     public TextMeshProUGUI scoretext;
     public TextMeshProUGUI wonscoretext;
    
