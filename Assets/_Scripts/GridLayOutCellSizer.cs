@@ -3,20 +3,28 @@ using UnityEngine.UI;
 
 public class GridLayOutCellSizer : MonoBehaviour
 {
-    public GridLayoutGroup G;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
+    public GridLayoutGroup CardContainer;
+    private bool IsLandscape;
     // Update is called once per frame
     public void CellResizer(int GridRow,int GridCol)
     {
-        Debug.Log("CellResizer ::"+G.GetComponent<RectTransform>().rect.width);
-        float width = G.GetComponent<RectTransform>().rect.width/(GridRow+GridCol);
-        Vector2 newsize = new Vector2(width, width);
-        G.cellSize = newsize;
+        float ResizerFactor;
+
+        IsLandscape = Screen.width > Screen.height;
+
+        if (IsLandscape)
+        {
+            Debug.Log("Ladscape Display");
+            ResizerFactor = CardContainer.GetComponent<RectTransform>().rect.width / (GridCol + GridRow);
+        }
+        else
+        {
+            Debug.Log("Portrait Display");
+            ResizerFactor = CardContainer.GetComponent<RectTransform>().rect.height / (GridCol + GridRow +1);//GridRow + GridCol-1
+        }
+
+        Vector2 newsize = new Vector2(ResizerFactor, ResizerFactor);
+        CardContainer.cellSize = newsize;
         Debug.Log("New Size is ::" + newsize);
     }
 }
